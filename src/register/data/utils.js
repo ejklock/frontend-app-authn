@@ -2,6 +2,7 @@ import { getConfig, snakeCaseObject } from '@edx/frontend-platform';
 
 import { LETTER_REGEX, NUMBER_REGEX } from '../../data/constants';
 import messages from '../messages';
+import validateCPF from '../RegistrationFields/CPFField/validator';
 import validateEmail from '../RegistrationFields/EmailField/validator';
 import validateName from '../RegistrationFields/NameField/validator';
 import validateUsername from '../RegistrationFields/UsernameField/validator';
@@ -14,7 +15,12 @@ import validateUsername from '../RegistrationFields/UsernameField/validator';
  */
 export const validatePasswordField = (value, formatMessage) => {
   let fieldError = '';
-  if (!value || !LETTER_REGEX.test(value) || !NUMBER_REGEX.test(value) || value.length < 8) {
+  if (
+    !value ||
+    !LETTER_REGEX.test(value) ||
+    !NUMBER_REGEX.test(value) ||
+    value.length < 8
+  ) {
     fieldError = formatMessage(messages['password.validation.message']);
   }
   return fieldError;
@@ -39,16 +45,26 @@ export const isFormValid = (
   const fieldErrors = { ...errors };
   let isValid = true;
   let emailSuggestion = { suggestion: '', type: '' };
-  Object.keys(payload).forEach(key => {
+  Object.keys(payload).forEach((key) => {
     switch (key) {
       case 'name':
         fieldErrors.name = validateName(payload.name, formatMessage);
-        if (fieldErrors.name) { isValid = false; }
+        if (fieldErrors.name) {
+          isValid = false;
+        }
+        break;
+      case 'cpf':
+        fieldErrors.name = validateCPF(payload.cpf, formatMessage);
+        if (fieldErrors.cpf) {
+          isValid = false;
+        }
         break;
       case 'email': {
-        const {
-          fieldError, confirmEmailError, suggestion,
-        } = validateEmail(payload.email, configurableFormFields?.confirm_email, formatMessage);
+        const { fieldError, confirmEmailError, suggestion } = validateEmail(
+          payload.email,
+          configurableFormFields?.confirm_email,
+          formatMessage,
+        );
         if (fieldError) {
           fieldErrors.email = fieldError;
           isValid = false;
@@ -61,12 +77,22 @@ export const isFormValid = (
         break;
       }
       case 'username':
-        fieldErrors.username = validateUsername(payload.username, formatMessage);
-        if (fieldErrors.username) { isValid = false; }
+        fieldErrors.username = validateUsername(
+          payload.username,
+          formatMessage,
+        );
+        if (fieldErrors.username) {
+          isValid = false;
+        }
         break;
       case 'password':
-        fieldErrors.password = validatePasswordField(payload.password, formatMessage);
-        if (fieldErrors.password) { isValid = false; }
+        fieldErrors.password = validatePasswordField(
+          payload.password,
+          formatMessage,
+        );
+        if (fieldErrors.password) {
+          isValid = false;
+        }
         break;
       default:
         break;
@@ -75,17 +101,27 @@ export const isFormValid = (
 
   if (getConfig().SHOW_CONFIGURABLE_EDX_FIELDS) {
     if (!configurableFormFields?.country?.displayValue) {
-      fieldErrors.country = formatMessage(messages['empty.country.field.error']);
+      fieldErrors.country = formatMessage(
+        messages['empty.country.field.error'],
+      );
       isValid = false;
     }
   }
-  Object.keys(fieldDescriptions).forEach(key => {
+  if (getConfig().SHOW_CONFIGURABLE_EDX_FIELDS) {
+    if (!configurableFormFields?.cpf?.displayValue) {
+      fieldErrors.cpf = formatMessage(messages['empty.cpf.field.error']);
+      isValid = false;
+    }
+  }
+  Object.keys(fieldDescriptions).forEach((key) => {
     if (key === 'country' && !configurableFormFields.country.displayValue) {
       fieldErrors[key] = formatMessage(messages['empty.country.field.error']);
     } else if (!configurableFormFields[key]) {
       fieldErrors[key] = fieldDescriptions[key].error_message;
     }
-    if (fieldErrors[key]) { isValid = false; }
+    if (fieldErrors[key]) {
+      isValid = false;
+    }
   });
 
   return { isValid, fieldErrors, emailSuggestion };
@@ -147,8 +183,9 @@ export const getBackendValidations = (registrationError, validations) => {
     );
 
     const validationDecisions = {};
-    fields.forEach(field => {
-      validationDecisions[field] = registrationError[field][0].userMessage || '';
+    fields.forEach((field) => {
+      validationDecisions[field] =
+        registrationError[field][0].userMessage || '';
     });
     return validationDecisions;
   }

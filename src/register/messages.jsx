@@ -22,6 +22,11 @@ const messages = defineMessages({
     defaultMessage: 'Public username',
     description: 'Label that appears above username field',
   },
+  'registration.cpf.label': {
+    id: 'registration.cpf.label',
+    defaultMessage: 'CPF',
+    description: 'Label that appears above cpf field',
+  },
   'registration.password.label': {
     id: 'registration.password.label',
     defaultMessage: 'Password',
@@ -58,6 +63,11 @@ const messages = defineMessages({
     defaultMessage: 'For account activation and important updates',
     description: 'Help text for email field on registration page',
   },
+  'help.text.cpf': {
+    id: 'help.text.cpf',
+    defaultMessage: 'To validate your identity',
+    description: 'Help text for cpf field on registration page',
+  },
   // Form buttons
   'create.account.for.free.button': {
     id: 'create.account.for.free.button',
@@ -90,6 +100,11 @@ const messages = defineMessages({
     id: 'empty.name.field.error',
     defaultMessage: 'Enter your full name',
     description: 'Error message for empty fullname field',
+  },
+  'empty.cpf.field.error': {
+    id: 'empty.cpf.field.error',
+    defaultMessage: 'Enter your CPF',
+    description: 'Error message for empty CPF field',
   },
   'empty.email.field.error': {
     id: 'empty.email.field.error',
@@ -125,6 +140,11 @@ const messages = defineMessages({
     id: 'username.validation.message',
     defaultMessage: 'Username must be between 2 and 30 characters',
     description: 'Error message for empty username field',
+  },
+  'cpf.validation.message': {
+    id: 'cpf.validation.message',
+    defaultMessage: 'Enter a valid CPF',
+    description: 'Validation message that appears CPF is invalid',
   },
   'name.validation.message': {
     id: 'name.validation.message',

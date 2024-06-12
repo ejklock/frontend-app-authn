@@ -12,6 +12,19 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import Skeleton from 'react-loading-skeleton';
 
+import {
+  InstitutionLogistration, PasswordField, RedirectLogistration, ThirdPartyAuthAlert,
+} from '../common-components';
+import EnterpriseSSO from '../common-components/EnterpriseSSO';
+import { getThirdPartyAuthContext as getRegistrationDataFromBackend } from '../common-components/data/actions';
+import {
+  COMPLETE_STATE, PENDING_STATE, REGISTER_PAGE,
+} from '../data/constants';
+import {
+  getAllPossibleQueryParams, getTpaHint, getTpaProvider, isHostAvailableInQueryParams, setCookie,
+} from '../data/utils';
+import { EmailField, NameField, UsernameField } from './RegistrationFields';
+import CPFField from './RegistrationFields/CPFField/CPFField';
 import ConfigurableRegistrationForm from './components/ConfigurableRegistrationForm';
 import RegistrationFailure from './components/RegistrationFailure';
 import ThirdPartyAuth from './components/ThirdPartyAuth';
@@ -28,18 +41,6 @@ import {
 } from './data/constants';
 import { getBackendValidations, isFormValid, prepareRegistrationPayload } from './data/utils';
 import messages from './messages';
-import { EmailField, NameField, UsernameField } from './RegistrationFields';
-import {
-  InstitutionLogistration, PasswordField, RedirectLogistration, ThirdPartyAuthAlert,
-} from '../common-components';
-import { getThirdPartyAuthContext as getRegistrationDataFromBackend } from '../common-components/data/actions';
-import EnterpriseSSO from '../common-components/EnterpriseSSO';
-import {
-  COMPLETE_STATE, PENDING_STATE, REGISTER_PAGE,
-} from '../data/constants';
-import {
-  getAllPossibleQueryParams, getTpaHint, getTpaProvider, isHostAvailableInQueryParams, setCookie,
-} from '../data/utils';
 
 /**
  * Main Registration Page component
@@ -327,6 +328,15 @@ const RegistrationPage = (props) => {
                 errorMessage={errors.email}
                 helpText={[formatMessage(messages['help.text.email'])]}
                 floatingLabel={formatMessage(messages['registration.email.label'])}
+              />
+              <CPFField
+                name="cpf"
+                value={formFields.cpf}
+                handleErrorChange={handleErrorChange}
+                handleChange={handleOnChange}
+                errorMessage={errors.cpf}
+                helpText={[formatMessage(messages['help.text.cpf'])]}
+                floatingLabel={formatMessage(messages['registration.cpf.label'])}
               />
               <UsernameField
                 name="username"

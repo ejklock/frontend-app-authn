@@ -6,7 +6,8 @@ import PropTypes from 'prop-types';
 
 import { FormGroup } from '../../../common-components';
 import { clearRegistrationBackendError, fetchRealtimeValidations } from '../../data/actions';
-import validateName from './validator';
+import { cpfMask } from './utils';
+import validateCPF from './validator';
 
 /**
  * Name field wrapper. It accepts following handlers
@@ -19,51 +20,51 @@ import validateName from './validator';
  * - Clearing error on focus
  * - Setting value on change
  */
-const NameField = (props) => {
+const CPFField = (props) => {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const validationApiRateLimited = useSelector(state => state.register.validationApiRateLimited);
 
   const {
     handleErrorChange,
-    shouldFetchUsernameSuggestions,
   } = props;
 
   const handleOnBlur = (e) => {
     const { value } = e.target;
-    const fieldError = validateName(value, formatMessage);
+    const fieldError = validateCPF(value, formatMessage);
     if (fieldError) {
-      handleErrorChange('name', fieldError);
-    } else if (shouldFetchUsernameSuggestions && !validationApiRateLimited) {
-      dispatch(fetchRealtimeValidations({ name: value }));
+      handleErrorChange('cpf', fieldError);
+    } else if (!validationApiRateLimited) {
+      dispatch(fetchRealtimeValidations({ cpf: value }));
     }
   };
 
   const handleOnFocus = () => {
-    handleErrorChange('name', '');
-    dispatch(clearRegistrationBackendError('name'));
+    handleErrorChange('cpf', '');
+    dispatch(clearRegistrationBackendError('cpf'));
   };
 
   return (
     <FormGroup
       {...props}
+      max={14}
+      value={cpfMask(props.value)}
       handleBlur={handleOnBlur}
       handleFocus={handleOnFocus}
     />
+
   );
 };
 
-NameField.defaultProps = {
+CPFField.defaultProps = {
   errorMessage: '',
-  shouldFetchUsernameSuggestions: false,
 };
 
-NameField.propTypes = {
+CPFField.propTypes = {
   errorMessage: PropTypes.string,
-  shouldFetchUsernameSuggestions: PropTypes.bool,
   value: PropTypes.string.isRequired,
   handleChange: PropTypes.func.isRequired,
   handleErrorChange: PropTypes.func.isRequired,
 };
 
-export default NameField;
+export default CPFField;
